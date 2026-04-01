@@ -1,44 +1,41 @@
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 public class TrainConsistManagementApp {
-
-    static class InvalidCapacityException extends Exception {
-        public InvalidCapacityException(String message) {
-            super(message);
-        }
-    }
-    static class PassengerBogie {
+    static class GoodsBogie {
         String type;
-        int capacity;
-
-        PassengerBogie(String type, int capacity) throws InvalidCapacityException {
-            if (capacity <= 0) {
-                throw new InvalidCapacityException("Capacity must be greater than zero");
-            }
+        String cargo;
+        GoodsBogie(String type, String cargo) {
             this.type = type;
-            this.capacity = capacity;
+            this.cargo = cargo;
         }
         @Override
         public String toString() {
-            return type + " -> " + capacity;
+            return type + " -> " + cargo;
         }
     }
     public static void main(String[] args) {
         System.out.println("=========================================================");
-        System.out.println(" UC14 - Handle Invalid Bogie Capacity ");
+        System.out.println(" UC12 - Safety Compliance Check for Goods Bogies ");
         System.out.println("=========================================================\n");
-        try {
-            PassengerBogie validBogie = new PassengerBogie("Sleeper", 72);
-            System.out.println("Created Bogie: " + validBogie);
-        } catch (InvalidCapacityException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-        try {
-            PassengerBogie invalidBogie = new PassengerBogie("AC Chair", 0);
-            System.out.println("Created Bogie: " + invalidBogie);
-        } catch (InvalidCapacityException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        List<GoodsBogie> goodsBogies = new ArrayList<>();
+        goodsBogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        goodsBogies.add(new GoodsBogie("Open", "Coal"));
+        goodsBogies.add(new GoodsBogie("Box", "Grain"));
+        goodsBogies.add(new GoodsBogie("Cylindrical", "Coal")); // Rule violator
+        System.out.println("Goods Bogies in Train:");
+        goodsBogies.forEach(bogie -> System.out.println(bogie));
+        System.out.println();
+        Predicate<GoodsBogie> safetyRule = b ->
+                !b.type.equalsIgnoreCase("Cylindrical") || b.cargo.equalsIgnoreCase("Petroleum");
 
-        System.out.println("\nUC14 exception handling completed...");
+        boolean isSafe = goodsBogies.stream().allMatch(safetyRule);
+        System.out.println("Safety Compliance Status: " + isSafe);
+        if (isSafe) {
+            System.out.println("Train formation is SAFE.");
+        } else {
+            System.out.println("Train formation is NOT SAFE.");
+        }
+        System.out.println("\nUC12 safety validation completed...");
     }
 }
