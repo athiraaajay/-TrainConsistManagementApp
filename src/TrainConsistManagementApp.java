@@ -1,7 +1,8 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 public class TrainConsistManagementApp {
+
     static class Bogie {
         String name;
         int capacity;
@@ -11,29 +12,31 @@ public class TrainConsistManagementApp {
         }
         @Override
         public String toString() {
-            return name + " -> " + capacity;
+            return name + " (Capacity: " + capacity + ")";
         }
     }
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC7 - Sort Bogies by Capacity (Comparator) ");
+        System.out.println(" UC8 - Filter Passenger Bogies (Streams) ");
         System.out.println("==========================================\n");
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
         bogies.add(new Bogie("AC Chair", 56));
         bogies.add(new Bogie("First Class", 24));
         bogies.add(new Bogie("General", 90));
-        System.out.println("Before Sorting:");
-        for (Bogie b : bogies) {
-            System.out.println(b);
-        }
+        System.out.println("All Passenger Bogies:");
+        bogies.forEach(System.out::println);
         System.out.println();
-        bogies.sort(Comparator.comparingInt(b -> b.capacity));
-
-        System.out.println("After Sorting by Capacity:");
-        for (Bogie b : bogies) {
-            System.out.println(b);
+        List<Bogie> highCapacityBogies = bogies.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+        System.out.println("High-Capacity Bogies (Capacity > 60):");
+        if (highCapacityBogies.isEmpty()) {
+            System.out.println("No bogies match the criteria.");
+        } else {
+            highCapacityBogies.forEach(System.out::println);
         }
-        System.out.println("\nUC7 sorting completed...");
+
+        System.out.println("\nUC8 stream filtering completed successfully...");
     }
 }
