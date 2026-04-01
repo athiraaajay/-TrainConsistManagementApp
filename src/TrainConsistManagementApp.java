@@ -1,35 +1,47 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-public class TrainConsistManagementApp {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+public class TrainConsistManagementApp{
+    static class Bogie {
+        String name;
+        int capacity;
+        Bogie(String name, int capacity) {
+            this.name = name;
+            this.capacity = capacity;
+        }
+    }
     public static void main(String[] args) {
-
         System.out.println("==========================================");
-        System.out.println(" UC11 - Validate Train ID & Cargo Codes ");
+        System.out.println(" UC13 - Performance Comparison (Benchmark) ");
         System.out.println("==========================================\n");
-        String trainIDRegex = "TRN-\\d{4}";
-        String cargoCodeRegex = "PET-[A-Z]{2}";
-        Pattern trainPattern = Pattern.compile(trainIDRegex);
-        Pattern cargoPattern = Pattern.compile(cargoCodeRegex);
-        String[] testTrainIDs = {"TRN-1234", "TRAIN12", "TRN-123", "TRN-12345"};
-        String[] testCargoCodes = {"PET-AB", "PET-ab", "PET123", "AB-PET"};
-        System.out.println("--- Train ID Validation ---");
-        for (String id : testTrainIDs) {
-            Matcher matcher = trainPattern.matcher(id);
-            if (matcher.matches()) {
-                System.out.println("Train ID: " + id + " -> VALID");
-            } else {
-                System.out.println("Train ID: " + id + " -> INVALID");
+        List<Bogie> bogies = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            bogies.add(new Bogie("Sleeper", 72));
+            bogies.add(new Bogie("AC Chair", 56));
+        }
+        System.out.println("Processing " + bogies.size() + " bogies for benchmark...\n");
+        long startTimeLoop = System.nanoTime();
+        List<Bogie> filteredByLoop = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.capacity > 60) {
+                filteredByLoop.add(b);
             }
         }
-        System.out.println("\n--- Cargo Code Validation ---");
-        for (String code : testCargoCodes) {
-            Matcher matcher = cargoPattern.matcher(code);
-            if (matcher.matches()) {
-                System.out.println("Cargo Code: " + code + " -> VALID");
-            } else {
-                System.out.println("Cargo Code: " + code + " -> INVALID");
-            }
-        }
-        System.out.println("\nUC11 validation processing completed...");
+        long endTimeLoop = System.nanoTime();
+        long durationLoop = endTimeLoop - startTimeLoop;
+        System.out.println("--- Loop-Based Result ---");
+        System.out.println("Filtered Count : " + filteredByLoop.size());
+        System.out.println("Execution Time : " + durationLoop + " ns");
+        System.out.println();
+        long startTimeStream = System.nanoTime();
+        List<Bogie> filteredByStream = bogies.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+        long endTimeStream = System.nanoTime();
+        long durationStream = endTimeStream - startTimeStream;
+        System.out.println("--- Stream-Based Result ---");
+        System.out.println("Filtered Count : " + filteredByStream.size());
+        System.out.println("Execution Time : " + durationStream + " ns");
+        System.out.println("\nUC13 performance benchmarking completed...");
     }
 }
